@@ -1,0 +1,259 @@
+{
+  "_note": "Category pages content. 'collection' is the Shopify collection handle that supplies the products. 'video' holds the how-to video plan: shots are a Gemini Omni prompt (timecoded), captions are burned in by ffmpeg, each caption's 'say' line is voiced with Gemini TTS and starts exactly when its caption appears. Copy avoids medical claims on purpose.",
+  "categories": [
+    {
+      "slug": "cleansers",
+      "collection": "cleansers",
+      "step": 1,
+      "title": "Cleansers",
+      "kicker": "Step 1 · Cleanse",
+      "tagline": "Every good routine starts with clean skin.",
+      "intro": "Cleansing removes sunscreen, makeup, oil and the day's pollution so everything you apply next can actually reach your skin. The right cleanser leaves skin fresh and comfortable — never tight.",
+      "benefits": [
+        {
+          "title": "A clean base",
+          "text": "Removes what sits on the surface so serums and creams absorb better."
+        },
+        {
+          "title": "Balanced",
+          "text": "pH-balanced formulas that respect your skin barrier."
+        },
+        {
+          "title": "For your skin type",
+          "text": "A cream for dry or sensitive skin, a gel with salicylic acid for oily skin."
+        }
+      ],
+      "howTo": [
+        {
+          "title": "Wet your face",
+          "text": "Use lukewarm water — hot water can dry the skin."
+        },
+        {
+          "title": "A pea-sized amount",
+          "text": "Massage gently for 30–60 seconds, including the hairline and jaw."
+        },
+        {
+          "title": "Rinse and pat dry",
+          "text": "Rinse well and pat, don't rub, with a soft towel."
+        },
+        {
+          "title": "Morning and night",
+          "text": "At night, cleanse twice if you wore sunscreen or makeup."
+        }
+      ],
+      "chooser": [
+        {
+          "need": "Dry, normal or sensitive skin",
+          "handle": "gentle-cream-cleanser"
+        },
+        {
+          "need": "Oily skin & blemishes",
+          "handle": "clarifying-gel-cleanser"
+        }
+      ],
+      "tip": "If your skin feels tight after cleansing, your cleanser is too strong.",
+      "video": {
+        "reference": "gentle-cream-cleanser",
+        "captions": [
+          {
+            "from": 0.3,
+            "to": 3.8,
+            "text": "1  Wet your face with lukewarm water",
+            "say": "Splash your face with lukewarm water."
+          },
+          {
+            "from": 3.9,
+            "to": 7.6,
+            "text": "2  A pea-sized amount",
+            "say": "A pea-sized amount is enough."
+          },
+          {
+            "from": 7.7,
+            "to": 11.4,
+            "text": "3  Massage gently, then rinse",
+            "say": "Massage gently, then rinse."
+          },
+          {
+            "from": 11.5,
+            "to": 14.8,
+            "text": "4  Morning and night",
+            "say": "Use it morning and night."
+          }
+        ],
+        "shots": "[0-4s] A woman leans over a honed travertine basin in fresh morning light and gently splashes lukewarm water onto her face with cupped hands, water droplets catching the light. [4-8s] Macro close-up: she squeezes a small pea-sized amount of soft cream cleanser from the ARDEA tube shown in the reference image onto her fingertips. [8-12s] Close-up of her cheek as she massages the cleanser in slow gentle circles into a soft creamy lather, then rinses with a splash of water. [12-15s] The ARDEA cleanser tube stands upright on its champagne-gold cap on wet travertine beside the basin, fresh water droplets beading on it, a small splash nearby, slow gentle push-in, ARDEA lettering crisp."
+      }
+    },
+    {
+      "slug": "serums",
+      "collection": "serums",
+      "step": 2,
+      "title": "Serums",
+      "kicker": "Step 2 · Treat",
+      "tagline": "Concentrated care for what your skin needs right now.",
+      "intro": "A serum is the most targeted step of a routine: a lightweight formula with a high concentration of one or two key ingredients, made to absorb fast and work under your moisturizer. Pick it by what you want to see change.",
+      "benefits": [
+        {
+          "title": "Targeted",
+          "text": "Each serum focuses on one goal — shine, dark spots, hydration, fine lines or redness."
+        },
+        {
+          "title": "Lightweight",
+          "text": "Water-light textures that absorb in seconds and layer under any cream or sunscreen."
+        },
+        {
+          "title": "Concentrated",
+          "text": "Higher levels of active ingredients than a moisturizer, so a few drops go a long way."
+        }
+      ],
+      "howTo": [
+        {
+          "title": "Start clean",
+          "text": "Apply after cleansing, on skin that is dry or slightly damp."
+        },
+        {
+          "title": "2–3 drops",
+          "text": "Release a few drops into your palm or onto your fingertips — more product doesn't mean better results."
+        },
+        {
+          "title": "Press, don't rub",
+          "text": "Gently press over face and neck and let it absorb for 30 seconds."
+        },
+        {
+          "title": "Seal it in",
+          "text": "Follow with your moisturizer — and sunscreen in the morning."
+        }
+      ],
+      "chooser": [
+        {
+          "need": "Shine & visible pores",
+          "handle": "niacinamide-zinc-serum"
+        },
+        {
+          "need": "Dark spots & dullness",
+          "handle": "vitamin-c-brightening-serum"
+        },
+        {
+          "need": "Dehydrated, tight skin",
+          "handle": "hyaluronic-hydration-serum"
+        },
+        {
+          "need": "Fine lines & texture",
+          "handle": "retinal-night-serum"
+        },
+        {
+          "need": "Redness & sensitivity",
+          "handle": "centella-calming-serum"
+        }
+      ],
+      "tip": "Using more than one? Vitamin C in the morning, retinal at night, and hyaluronic or centella any time.",
+      "video": {
+        "reference": "niacinamide-zinc-serum",
+        "captions": [
+          {
+            "from": 0.3,
+            "to": 3.8,
+            "text": "1  Start on clean, toned skin",
+            "say": "Start on clean, toned skin."
+          },
+          {
+            "from": 3.9,
+            "to": 7.6,
+            "text": "2  Two or three drops",
+            "say": "Two or three drops into your palm."
+          },
+          {
+            "from": 7.7,
+            "to": 11.4,
+            "text": "3  Press gently — don't rub",
+            "say": "Press gently over face and neck. Don't rub."
+          },
+          {
+            "from": 11.5,
+            "to": 14.8,
+            "text": "4  Seal with moisturizer",
+            "say": "Then seal it in with your moisturizer."
+          }
+        ],
+        "shots": "[0-4s] Close-up of a woman's hands on a travertine bathroom counter in warm morning light, unscrewing the champagne-gold dropper of the ARDEA serum bottle shown in the reference image. [4-8s] Macro shot: the glass pipette releases two or three clear drops into her open palm. [8-12s] Soft close-up of her cheek and jawline as she gently presses the serum into her skin with her fingertips, calm and unhurried, skin glowing naturally. [12-15s] The ARDEA serum bottle rests on the travertine counter next to a sprig of eucalyptus, slow gentle push-in, the ARDEA lettering crisp."
+      }
+    },
+    {
+      "slug": "masks",
+      "collection": "masks",
+      "step": 3,
+      "title": "Masks",
+      "kicker": "Step 3 · Weekly ritual",
+      "tagline": "Fifteen minutes to calm, hydrate and unwind.",
+      "intro": "A sheet mask is an intensive boost of hydration and a moment to slow down. Use it two or three evenings a week, after toning and before moisturizer.",
+      "benefits": [
+        {
+          "title": "Deep hydration",
+          "text": "A biocellulose sheet holds more essence against the skin."
+        },
+        {
+          "title": "Calming",
+          "text": "Chamomile and centella help skin look calmer after a long day."
+        },
+        {
+          "title": "A ritual",
+          "text": "Fifteen quiet minutes that make the routine something to look forward to."
+        }
+      ],
+      "howTo": [
+        {
+          "title": "Cleanse first",
+          "text": "Start with freshly cleansed, slightly damp skin."
+        },
+        {
+          "title": "Unfold and smooth",
+          "text": "Place the mask and smooth out any air bubbles."
+        },
+        {
+          "title": "Relax 15–20 minutes",
+          "text": "Don't leave it on until it dries."
+        },
+        {
+          "title": "Pat in and moisturize",
+          "text": "Press the leftover essence into the skin, then seal with cream."
+        }
+      ],
+      "chooser": [
+        {
+          "need": "Hydration & calm",
+          "handle": "relaxing-sheet-masks"
+        }
+      ],
+      "tip": "Keep a mask in the fridge for an extra-cooling effect.",
+      "video": {
+        "reference": "relaxing-sheet-masks",
+        "captions": [
+          {
+            "from": 0.3,
+            "to": 3.8,
+            "text": "1  Start with clean, toned skin",
+            "say": "Start with clean, toned skin."
+          },
+          {
+            "from": 3.9,
+            "to": 7.6,
+            "text": "2  Unfold and smooth it on",
+            "say": "Unfold the mask and smooth it on."
+          },
+          {
+            "from": 7.7,
+            "to": 11.4,
+            "text": "3  Relax for 15–20 minutes",
+            "say": "Relax for fifteen to twenty minutes."
+          },
+          {
+            "from": 11.5,
+            "to": 14.8,
+            "text": "4  Two or three evenings a week",
+            "say": "Two or three evenings a week."
+          }
+        ],
+        "shots": "[0-4s] Evening, warm candlelight: a woman's hands tear open one of the ARDEA sheet-mask sachets shown in the reference image, on a folded lilac-grey waffle-weave linen towel on travertine. [4-8s] Soft close-up: she unfolds a white biocellulose sheet mask and gently smooths it over her face with her fingertips. [8-12s] She reclines on a sofa wrapped in the lilac towel, wearing the sheet mask, eyes closed, completely relaxed, candle flickering softly in the foreground. [12-15s] The ARDEA sheet-mask sachets rest on the lilac waffle towel next to a lit cream-colored candle and a small dish of dried chamomile, slow gentle push-in, ARDEA lettering crisp, intimate golden candlelight with soft lilac undertones."
+      }
+    }
+  ]
+}

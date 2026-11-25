@@ -1,0 +1,140 @@
+"""Owner notifications over Telegram: chat escalations, new orders, low stock and sell-outs.
+
+No-op until TELEGRAM_BOT_TOKEN and TELEGRAM_OWNER_CHAT_ID are set (escalations are still stored in Supabase).
+Messages use Telegram's HTML mode; every dynamic value goes through esc().
+"""
+from __future__ import annotations
+
+import html
+import logging
+import re
+from datetime import datetime, timezone
+
+import httpx
+
+from . import config, db
+
+log = logging.getLogger("agent.notify")
+LABELS = {"complaint": "Complaint", "order_issue": "Order issue", "medical_question": "Medical question",
+          "human_request": "Wants a human", "other": "Other"}
+ICONS = {"complaint": "⚠️", "order_issue": "📦", "medical_question": "🩺", "human_request": "🙋", "other": "💬"}
+
+
+def esc(v) -> str:
+    return html.escape(str(v), quote=False)
+
+
+def enabled() -> bool:
+    return bool(config.TELEGRAM_BOT_TOKEN and config.TELEGRAM_OWNER_CHAT_ID)
+
+
+def _api(method: str) -> str:
+    return f"https://api.telegram.org/bot{config.TELEGRAM_BOT_TOKEN}/{method}"
+
+
+def _plain(text: str) -> str:
+    """Fallback when Telegram rejects our HTML: drop the tags, unescape entities."""
+    return html.unescape(re.sub(r"</?[a-zA-Z][^<>]*>", "", text))
+
+
+def buttons(*rows: list[tuple[str, str]]) -> dict:
+    """Inline keyboard: buttons((("✅ Confirm", "rs:ab12:y"), ("Cancel", "rs:ab12:n")))."""
+    return {"inline_keyboard": [[{"text": t, "callback_data": d} for t, d in row] for row in rows]}
+
+
+async def telegram(text: str, chat_id: str | int | None = None, keyboard: dict | None = None) -> bool:
+    chat_id = chat_id or config.TELEGRAM_OWNER_CHAT_ID
+    if not config.TELEGRAM_BOT_TOKEN or not chat_id:
+        return False
+    extra = {"reply_markup": keyboard} if keyboard else {}
+    try:
+        async with httpx.AsyncClient(timeout=10) as http:
+            body = {"chat_id": chat_id, "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": True}
+            r = await http.post(_api("sendMessage"), json=body | extra)
+            if r.status_code == 400:  # model-written HTML that Telegram can't parse: resend as plain text
+                r = await http.post(_api("sendMessage"), json={"chat_id": chat_id, "text": _plain(text)[:4000],
+                                                                "disable_web_page_preview": True} | extra)
+        if r.status_code != 200:
+            log.warning("telegram %s: %s", r.status_code, r.text[:200])
+        return r.status_code == 200
+    except httpx.HTTPError as e:
+        log.warning("telegram failed: %s", e.__class__.__name__)  # never log the URL: it contains the token
+        return False
+
+
+async def telegram_photo(png: bytes, chat_id: str | int, caption: str = "") -> bool:
+    try:
+        async with httpx.AsyncClient(timeout=30) as http:
+            r = await http.post(_api("sendPhoto"), data={"chat_id": str(chat_id), "caption": caption[:1000]},
+                                files={"photo": ("chart.png", png, "image/png")})
+        if r.status_code != 200:
+            log.warning("telegram photo %s: %s", r.status_code, r.text[:200])
+        return r.status_code == 200
+    except httpx.HTTPError as e:
+        log.warning("telegram photo failed: %s", e.__class__.__name__)
+        return False
+
+
+async def answer_callback(callback_id: str, text: str = "") -> None:
+    """Stop the spinner on a tapped inline button (optionally with a short toast)."""
+    try:
+        async with httpx.AsyncClient(timeout=5) as http:
+            await http.post(_api("answerCallbackQuery"), json={"callback_query_id": callback_id, "text": text[:190]})
+    except httpx.HTTPError:
+        pass
+
+
+async def edit_message(chat_id: str | int, message_id: int, text: str) -> bool:
+    """Replace a message's text and remove its buttons (so a decision can't be tapped twice)."""
+    try:
+        async with httpx.AsyncClient(timeout=10) as http:
+            r = await http.post(_api("editMessageText"), json={
+                "chat_id": chat_id, "message_id": message_id, "text": text[:4000], "parse_mode": "HTML",
+                "disable_web_page_preview": True, "reply_markup": {"inline_keyboard": []}})
+        if r.status_code != 200:
+            log.warning("telegram edit %s: %s", r.status_code, r.text[:200])
+        return r.status_code == 200
+    except httpx.HTTPError as e:
+        log.warning("telegram edit failed: %s", e.__class__.__name__)
+        return False
+
+
+async def typing(chat_id: str | int, action: str = "typing") -> None:
+    try:
+        async with httpx.AsyncClient(timeout=5) as http:
+            await http.post(_api("sendChatAction"), json={"chat_id": chat_id, "action": action})
+    except httpx.HTTPError:
+        pass
+
+
+async def owner_escalation(row: dict) -> bool:
+    """Urgent cases (complaints, order issues, medical questions) go out now; the rest stay 'open' and are
+    listed in the next daily summary, which then marks them notified."""
+    kind = row.get("kind") or "other"
+    if kind not in config.URGENT_ESCALATIONS:
+        return False
+    text = (f"{ICONS.get(kind, '💬')} <b>{esc(LABELS.get(kind, 'Case'))}</b> · <code>{esc(row.get('ref_code'))}</code>\n"
+            f"From the store chat:\n\n{esc(row.get('summary'))}"
+            + (f"\n\nContact: {esc(row['contact'])}" if row.get("contact") else ""))
+    sent = await telegram(text)
+    if sent and row.get("ref_code"):
+        await db.update(f"escalations?ref_code=eq.{row['ref_code']}",
+                        {"status": "notified", "notified_at": datetime.now(timezone.utc).isoformat()})
+    return sent
+
+
+async def new_order(order: dict) -> bool:
+    items = "\n".join(f"• {esc(li.get('quantity'))}× {esc(li.get('title'))}"
+                      + (f" ({esc(li['variant_title'])})" if li.get("variant_title") else "")
+                      for li in order.get("line_items") or [])
+    test = " · test order" if order.get("test") else ""
+    admin = f"https://admin.shopify.com/store/{config.SHOPIFY_SHOP}/orders/{order.get('id')}"
+    return await telegram(f"💰 <b>Big order {esc(order.get('name'))}</b>{test}\n"
+                          f"{esc(order.get('total_price'))} {esc(order.get('currency'))}\n\n{items}\n\n"
+                          f'<a href="{esc(admin)}">Open in Shopify</a>')
+
+
+async def stock_alert(name: str, qty: int) -> bool:
+    if qty <= 0:
+        return await telegram(f"⛔ <b>Sold out:</b> {esc(name)}\nIt now shows as sold out in the store.")
+    return await telegram(f"📉 <b>Low stock:</b> {esc(name)} — only {qty} left")

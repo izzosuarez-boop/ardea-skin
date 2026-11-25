@@ -1,0 +1,27 @@
+# Caddy obtains and renews HTTPS certificates automatically for every site below. Hosts come from .env.
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
+
+# the store, and its chat's API on the store's own domain
+{$STORE_HOST} {
+	import common
+	handle_path /agent-api/* {
+		reverse_proxy api:8000
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}
+
+# Shopify and Telegram webhooks
+{$API_HOST} {
+	import common
+	reverse_proxy api:8000
+}
